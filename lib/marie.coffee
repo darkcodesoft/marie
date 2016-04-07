@@ -52,9 +52,6 @@ class Marie
 			'api':
 				'add': @addApi
 				'remove': @removeApi
-			'list': @list
-			'db':
-				'configure': @configure
 			'module':
 				'add': @addModule
 				'remove': @removeModule
@@ -65,30 +62,19 @@ class Marie
 	route: ->
 		len = @args.length - 1
 		route = @args[2]
-
 		if @routes[route]?
 			arg = @args[3] or null
-			if @routes[route]? then @routes[route](arg)
+			opt = @args[4] or null
+			if @routes[route]? then @routes[route] arg, opt
 		else
 			cmd = @args[3] or null
 			arg = @args[4] or null
 			key = @args[5] or null
 			opt = @args[6] or null
-
-			if cmd is 'list' then @list route, arg, key, opt
-			else if @commands[arg][cmd] then @commands[arg][cmd] route, key, opt
-			else
-				ui.notice 'Invalid command.'
-				ui.notice 'load help'
-
-			# console.log ''
-			# ui.notice 'app command'
-			# ui.notice "route: #{route}"
-			# ui.notice "command: #{cmd}"
-			# ui.notice "arg: #{arg}"
-			# ui.notice "key: #{key}"
-			# ui.notice "opt: #{opt}"
-			# console.log ''
+			if cmd and cmd is 'list' then @list route, arg, key, opt
+			else if cmd and cmd is 'set' then @configureMore route, arg, key, opt
+			else if cmd and arg and @commands[arg][cmd]? then @commands[arg][cmd] route, key, opt
+			else @listHelp()
 
 	###
 	Confgiure the default express/sails application framework
@@ -420,6 +406,9 @@ class Marie
 
 	###
 	Configure `list` app command handler. Retrive and List all apps or single app method
+	@param [String] arg 
+	@param [String] key
+	@param [String] opt
 	@example `marie list`
 	@example `marie list dc-web`
 	@returns [Array<App>, App] apps return apps or app
@@ -450,9 +439,9 @@ class Marie
 	Configure `remove` app command handler. Remove app from system
 	@example `marie remove dc-web`
 	###
-	remove: =>
-		if not not @args[3]
-			if not not @args[4] and @args[4].match /\-f/ then @_remove()
+	remove: (arg, opt) =>
+		if not not arg
+			if not not opt and opt.match /\-f/ then @_remove arg
 			else 
 				ui.warn 'Are you sure?'
 				utils.prompt.start()
@@ -460,14 +449,14 @@ class Marie
 				ui.line()
 				utils.prompt.get [input], (err, result) =>
 					ui.line()
-					if result[input].match(/^y/i) then @_remove()
+					if result[input].match(/^y/i) then @_remove arg
 		else
 			ui.error 'Missing argument.'
 	###
 	remove
 	###
-	_remove: =>
-		App.remove @args[3], (err, success) =>
+	_remove: (arg) =>
+		App.remove arg, (err, success) =>
 			if err then utils.throwError err
 			else ui.ok success
 
@@ -537,6 +526,7 @@ class Marie
 
 	###
 	Configure system run app method.
+	@param [String] arg 
 	@param [String] cmd command sart/stop/restart
 	###
 	_run: (cmd, arg) ->
@@ -562,67 +552,76 @@ class Marie
 
 	###
 	Configure add api method
+	@param [String] arg 
 	@param [String] api api to add
 	@example `marie dc-web add api user`
 	###
 	addApi: (arg, api) =>
-		# console.log arg
-		# console.log api 
-		# console.log key 
-		# console.log opt
-		App.addApi arg, api, (err, app) =>
-			if err then utils.throwError err
-			else
-				@app = app
-				@restart()
-				ui.ok "Added api #{api}"
+		if not not api 
+			App.addApi arg, api, (err, app) =>
+				if err then utils.throwError err
+				else
+					@app = app
+					@restart()
+					ui.ok "Added api #{api}"
+		else ui.error 'Missing argument.'
 
 	###
 	Configure remove api method
+	@param [String] arg 
 	@param [String] api api to remove
 	@example `marie dc-web remove api user`
 	###
 	removeApi: (arg, api) =>
-		App.removeApi arg, api, (err, app) =>
-			if err then utils.throwError err
-			else
-				@app = app
-				@restart()
-				ui.ok "Removed api #{api}"
+		if not not api 
+			App.removeApi arg, api, (err, app) =>
+				if err then utils.throwError err
+				else
+					@app = app
+					@restart()
+					ui.ok "Removed api #{api}"
+		else ui.error 'Missing argument.'
 
 	###
 	Configure add module method
-	@param [String] pkg module to add
+	@param [String] arg 
+	@param [String] pkg module to remove
+	@param [String] opt
 	@example `marie dc-web add module bower`
 	###
 	addModule: (arg, pkg, opt) =>
-		# console.log arg
-		# console.log pkg 
-		# console.log opt
-		ui.write "Adding `#{pkg}` module..."
-		App.addModule arg, pkg, opt, (err, app) =>
-			if err then utils.throwError err
-			else
-				@app = app
-				@restart()
-				ui.ok "Added module #{pkg}"
+		if not not pkg
+			ui.write "Adding `#{pkg}` module..."
+			App.addModule arg, pkg, opt, (err, app) =>
+				if err then utils.throwError err
+				else
+					@app = app
+					@restart()
+					ui.ok "Added module #{pkg}"
+		else ui.error 'Missing argument.'
 
 	###
 	Configure remove module method
+	@param [String] arg 
 	@param [String] pkg module to remove
+	@param [String] opt
 	@example `marie dc-web remove module bower`
 	###
 	removeModule: (arg, pkg, opt) =>
-		ui.write "Removing `#{pkg}` module..."
-		App.removeModule arg, pkg, opt, (err, app) =>
-			if err then utils.throwError err
-			else
-				@app = app
-				@restart()
-				ui.ok "Removed module #{pkg}"
+		if not not pkg
+			ui.write "Removing `#{pkg}` module..."
+			App.removeModule arg, pkg, opt, (err, app) =>
+				if err then utils.throwError err
+				else
+					@app = app
+					@restart()
+					ui.ok "Removed module #{pkg}"
+		else ui.error 'Missing argument.'
 
 	###
 	Configure list module method
+	@param [String] arg 
+	@param [String] key
 	@example `marie dc-web remove module bower`
 	###
 	listConfig: (arg, key) =>
@@ -634,6 +633,8 @@ class Marie
 
 	###
 	Configure list module method
+	@param [String] arg 
+	@param [String] opt
 	@example `marie dc-web remove module bower`
 	###
 	listModules: (arg, opt) =>
@@ -645,6 +646,7 @@ class Marie
 
 	###
 	Configure list module method
+	@param [String] arg 
 	@example `marie dc-web remove module bower`
 	###
 	listApis: (arg) =>
@@ -655,9 +657,9 @@ class Marie
 	###
 	Display system log method 
 	###
-	log: =>
+	log: (arg) =>
 		file = "#{utils.root}/config/.log"
-		if @args[3] and @args[3].match /clear/i
+		if arg and arg.match /clear/i
 			utils.fs.stat file, (err, stats) ->
 				if err then ui.notice 'Log is empty'
 				else
@@ -672,18 +674,27 @@ class Marie
 
 	###
 	cli configure command handler
+	@param [String] arg 
+	@param [String] key
+	@param [String] opt
 	###
-	configure: (arg, key) =>
-		# name = @args[3]
-		# key = @args[4]
+	configureMore: (arg, key, opt) =>
 		App.find arg, (error, app) =>
 			if error then utils.throwError error
 			else if app 
 				@app = app
 				if key.match /db/i
 					@configureDB app, true
-				else if key.match /frontend/i
-					@configureFrontEndFramework app, true
+				else
+					ui.notice 'invalid argument.'
+
+	###
+	display help
+	###
+	listHelp: =>
+		ui.notice 'Valid commands:'
+		help = utils.fs.readFileSync utils.path.join(utils.root, 'help.txt'), utils.UTF8
+		console.log '%s', help
 
 # export marie module
 module.exports = Marie
