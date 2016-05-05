@@ -467,8 +467,8 @@ class Marie
 					else
 						app = new App data
 						for k of app
-							if k.toLowerCase() == key.toLowerCase() then ui.notice app[k]
-				else console.log data
+							if k.toLowerCase() == key.toLowerCase() then ui.notice JSON.stringify app[k]
+				else console.log JSON.stringify data
 
 	###
 	Configure `live` app command handler. Get all live app
@@ -477,7 +477,7 @@ class Marie
 	live: =>
 		App.live (err, app) =>
 			if err then utils.throwError err
-			else if app then console.log app
+			else if app then console.log JSON.stringify app
 			else ui.notice 'No app is live.'
 
 	###
@@ -676,8 +676,8 @@ class Marie
 		App.getConfig arg, key, (err, config) =>
 			if err then utils.throwError err
 			else
-				if config.constructor == String then ui.notice config
-				else console.log config
+				if config.constructor == String then ui.notice JSON.stringify config
+				else console.log JSON.stringify config
 
 	###
 	Configure list module method
@@ -688,8 +688,8 @@ class Marie
 		App.getModules arg, opt, (err, config) =>
 			if err then utils.throwError err
 			else
-				if config.constructor == String then ui.notice config
-				else console.log config
+				if config.constructor == String then ui.notice JSON.stringify config
+				else console.log JSON.stringify config
 
 	###
 	Configure list module method
@@ -698,7 +698,7 @@ class Marie
 	listApis: (arg) =>
 		App.getApis arg, (err, config) =>
 			if err then utils.throwError err
-			else console.log config
+			else console.log JSON.stringify config
 
 	###
 	Display system log method 
