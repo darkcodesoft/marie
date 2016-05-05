@@ -457,7 +457,7 @@ class Marie
 	@param [String] opt
 	###
 	list: (arg, key, opt) =>
-		if arg == 'utils' then return @listUtilityConfig()
+		if arg == 'config' then return @listUtilityConfig()
 		App.find arg, (err, data) =>
 			if err then utils.throwError err
 			else
