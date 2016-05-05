@@ -457,6 +457,7 @@ class Marie
 	@param [String] opt
 	###
 	list: (arg, key, opt) =>
+		if arg == 'utils' then return @listUtilityConfig()
 		App.find arg, (err, data) =>
 			if err then utils.throwError err
 			else
@@ -678,6 +679,17 @@ class Marie
 			else
 				if config.constructor == String then ui.notice JSON.stringify config
 				else console.log JSON.stringify config
+
+	###
+	List utility config
+	###
+	listUtilityConfig: =>
+		config =
+			compilers: utils.compilers
+			processors: utils.processors
+			engines: utils.engines
+			storage: utils.storage
+		console.log JSON.stringify config
 
 	###
 	Configure list module method

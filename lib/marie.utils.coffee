@@ -28,55 +28,68 @@ class Utils
 		COFFEE:
 			id: '--coffee'
 			name: 'CoffeeScript'
+			label: 'Coffee Script'
 			extension: '.coffee'
 		NATIVE:
 			id: '--native'
 			name: 'native'
+			label: 'Native JS'
 			extension: '.js'
 	processors:
 		LESS:
 			id: 'less'
+			label: 'LESS'
 			extension: '.less'
 		SCSS:
 			id: 'scss'
+			label: 'SASS'
 			extension: '.scss'
 		STYLUS:
 			id: 'stylus'
+			label: 'Stylus'
 			extension: '.styl'
 	engines:
 		EJS:
 			id: 'ejs'
+			label: 'EJS'
 			extension: '.ejs'
 		JADE:
 			id: 'jade'
+			label: 'Jade'
 			extension: '.jade'
 		HANDLEBARS:
 			id: 'handlebars'
+			label: 'Handlebars'
 			extension: '.handlebars'
 	storage:
 		DISK: 
 			name: 'disk'
 			id: 'localDiskDb'
+			label: 'Disk'
 			adapter: 'sails-disk'
 			version: 'latest'
 		MONGODB: 
 			name: 'mongodb'
 			id: 'someMongodbServer'
+			label: 'MongoDb'
 			adapter: 'sails-mongo'
 			version: '0.12.0'
 		MYSQL: 
 			name: 'mysql'
 			id: 'someMysqlServer'
+			label: 'MySQL'
 			adapter: 'sails-mysql'
 			version: 'latest'
 		POSTGRESQL: 
 			name: 'postgresql'
 			id: 'somePostgresqlServer'
+			label: 'PostgreSQL'
 			adapter: 'sails-postgresql'
 			version: 'latest'
 		REDIS: 
 			name: 'redis'
 			id: 'someRedisServer'
+			label: 'Redis'
 			adapter: 'sails-redis'
 			version: 'latest'
 	views:
