@@ -472,16 +472,23 @@ class Marie
 				else 
 					if not not arg 
 						App.getModules arg, opt, (err, config) =>
-							if err then modules = null
-							else modules = config
-							App.getApis arg, (err, config) =>
-								if err then apis = null
-								else apis = config
-								app =
-									attributes: data
-									modules: modules
-									apis: apis
-								console.log JSON.stringify app
+							modules = {}
+							if err then modules['save'] = modules['dev'] = null
+							else 
+								modules = config
+							App.getModules arg, '-f', (err, fconfig) =>
+								if err then fmodules = null
+								else
+									fmodules = fconfig
+								modules['frontend'] = fmodules
+								App.getApis arg, (err, config) =>
+									if err then apis = null
+									else apis = config
+									app =
+										attributes: data
+										modules: modules
+										apis: apis
+									console.log JSON.stringify app
 					else
 						console.log JSON.stringify data
 
