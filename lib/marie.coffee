@@ -457,7 +457,7 @@ class Marie
 	@param [String] opt
 	###
 	list: (arg, key, opt) =>
-		if arg == 'config' then return @listUtilityConfig()
+		if arg == '--config' then return @listUtilityConfig()
 		App.find arg, (err, data) =>
 			if err then utils.throwError err
 			else
@@ -469,7 +469,21 @@ class Marie
 						app = new App data
 						for k of app
 							if k.toLowerCase() == key.toLowerCase() then ui.notice JSON.stringify app[k]
-				else console.log JSON.stringify data
+				else 
+					if not not arg 
+						App.getModules arg, opt, (err, config) =>
+							if err then modules = null
+							else modules = config
+							App.getApis arg, (err, config) =>
+								if err then apis = null
+								else apis = config
+								app =
+									attributes: data
+									modules: modules
+									apis: apis
+								console.log JSON.stringify app
+					else
+						console.log JSON.stringify data
 
 	###
 	Configure `live` app command handler. Get all live app

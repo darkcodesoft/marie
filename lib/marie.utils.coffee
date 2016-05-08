@@ -157,7 +157,7 @@ class Utils
 	Get unix timestamp
 	###
 	now: ->
-		return Date.now() / 100 | 0
+		return Math.round Date.now()
 
 	###
 	Get compiler object
