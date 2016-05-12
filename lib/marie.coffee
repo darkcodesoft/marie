@@ -71,7 +71,8 @@ class Marie
 			cssPreProcessor = @args[4]
 			viewEngine = @args[5]
 			jsCompiler = @args[6]
-			@add name, cssPreProcessor, viewEngine, jsCompiler
+			root = @args[7]
+			@add name, cssPreProcessor, viewEngine, jsCompiler, root
 		else if @routes[route]?
 			arg = @args[3] or null
 			opt = @args[4] or null
@@ -112,7 +113,7 @@ class Marie
 			if err
 				App.find config.id, (err, exists) =>
 					if not exists
-						ui.header 'Creating', config.name
+						# ui.header 'Creating', config.name
 						@app = new App config
 						@configureSails()
 					else 
@@ -129,32 +130,21 @@ class Marie
 	will try to install sails if not already installed. 
 	###
 	configureSails: ->
-		ui.write 'Configuring Sails...'
-		utils.exe 'sails', ['--version', @app.id], (error, stdout, stderr) =>
+		ui.write "Configuring sails."
+		utils.exe utils.node, [utils.sails, 'generate', 'new', @app.id], (error, stdout, stderr) =>
 			if error
-				utils.exe 'npm', ['install', "sails@#{utils.sailsVersion}", '-g'], (error, stdout, stderr) =>
-					if error 
-						ui.error 'An error occured.'
-						ui.notice "Run `sudo npm install sails@#{utils.sailsVersion} -g` then try again."
+				ui.write 'Installing initial packages.'
+				process.chdir @app.path
+				utils.exe utils.node, [utils.npm, 'install'], (error, stdout, stderr) =>
+					if error
+						ui.write error
 					else
-						@configureSails()
+						ui.ok 'Sails configuration done.'
+						@configureTasManager @app
 			else
-				version = utils.trim stdout
-				isSails = version == utils.sailsVersion
-				if isSails
-					utils.exe 'sails', ['generate', 'new', @app.id], (error, stdout, stderr) =>
-						if error
-							@throwFatalError error
-						else
-							ui.ok 'Sails configuration done.'
-							process.chdir @app.path
-							@configureTasManager @app
-				else
-					utils.exe 'npm', ['uninstall', 'sails', '-g'], (error, stdout, stderr) =>
-						if error 
-							utils.throwError error
-						else
-							@configureSails()
+				ui.ok 'Sails configuration done.'
+				process.chdir @app.path
+				@configureTasManager @app
 
 	###
 	Configure grunt as the default task manager
@@ -427,26 +417,29 @@ class Marie
 	@param [String] viewEngine app viewEngine
 	@param [String] jsCompiler app compiler
 	###	
-	add: (name, cssPreProcessor, viewEngine, jsCompiler) ->
+	add: (name, cssPreProcessor, viewEngine, jsCompiler, root) ->
 		valid = true
 		if not name
 			ui.error 'Missing field: app name.'
 			valid = false
-		if cssPreProcessor and not utils.getProcessor cssPreProcessor
+		if cssPreProcessor and not utils.getProcessor cssPreProcessor.toLowerCase()
 			ui.error 'Invalid css pre-processor argument.'
 			ui.notice "Supported pre-processors: #{utils.processorList().join(', ')}"
 			valid = false
-		if viewEngine and not utils.getEngine viewEngine
+		if viewEngine and not utils.getEngine viewEngine.toLowerCase()
 			ui.error 'Invalid view engine argument.'
 			ui.notice "Supported engines: #{utils.engineList().join(', ')}"
 			valid = false
-		if jsCompiler and not utils.getCompiler jsCompiler
+		if jsCompiler and not utils.getCompiler jsCompiler.toLowerCase()
 			ui.error 'Invalid JS compiler argument.'
 			ui.notice "Supported compilers: #{utils.compilerList().join(', ')}"
 			valid = false
-		preocessor = utils.getProcessor(cssPreProcessor).id or utils.processors.LESS.id
-		engine = utils.getEngine(viewEngine).id or utils.engines.JADE.id
-		compiler = utils.getCompiler(jsCompiler).name or utils.compilers.NATIVE.name
+		if root 
+			@root = root
+			process.chdir @root
+		preocessor = utils.getProcessor(cssPreProcessor.toLowerCase()).id or utils.processors.LESS.id
+		engine = utils.getEngine(viewEngine.toLowerCase()).id or utils.engines.JADE.id
+		compiler = utils.getCompiler(jsCompiler.toLowerCase()).name or utils.compilers.NATIVE.name
 		if valid then @new name, preocessor, engine, compiler
 
 	###

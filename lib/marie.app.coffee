@@ -195,7 +195,7 @@ class App
 		log = "#{utils.root}/config/.log"
 		out = utils.fs.openSync log, 'a'
 		err = utils.fs.openSync log, 'a'
-		start = utils.spawn 'node', [file], {
+		start = utils.spawn utils.node, [file], {
 			detached: true
 			stdio: ['ignore', out, err]
 		}

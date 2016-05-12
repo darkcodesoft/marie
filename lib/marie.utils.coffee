@@ -7,7 +7,9 @@
 ###
 
 class Utils
-	sailsVersion: '0.12.1'
+	node: '/Users/tmoussignac/dropbox/apps/node/lib/node'
+	npm: '/Users/tmoussignac/dropbox/apps/node/lib/npm'
+	sails: '/Users/tmoussignac/dropbox/apps/node/lib/sails'
 	bower: require 'bower'
 	encoding:
 		UTF8: 'utf8'
@@ -246,7 +248,7 @@ class Utils
 			@bower.commands.install(pkg, {save:true, directory: 'assets/modules'}).on 'end', (installed) ->
 				cb null, installed, null
 		else
-			@exe 'npm', ['install', pkg, opt], cb
+			@exe @node, [@npm, 'install', pkg, opt], cb
 
 	###
 	Uninstall package method definition
@@ -259,7 +261,7 @@ class Utils
 			@bower.commands.uninstall(pkg, {save:true, directory: 'assets/modules'}).on 'end', (installed) ->
 				cb null, installed, null
 		else
-			@exe 'npm', ['uninstall', pkg, opt], cb
+			@exe @node, [@npm, 'uninstall', pkg, opt], cb
 
 	###
 	Install packages method definition
@@ -283,9 +285,9 @@ class Utils
 	installApi: (api, app, cb) ->
 		api = @trim api.toLowerCase()
 		if @isCoffee(app)
-			@exe 'sails', ['generate', 'api', api, @compilers.COFFEE.id], cb
+			@exe @node, [@sails, 'generate', 'api', api, @compilers.COFFEE.id], cb
 		else
-			@exe 'sails', ['generate', 'api', api], cb
+			@exe @node, [@sails, 'generate', 'api', api], cb
 
 	###
 	Uninstall api method definition
@@ -375,7 +377,6 @@ class Utils
 			stream = stream.replace regex, "#{engine.id}"
 			stream = stream.replace /'layout'/gi, layout
 			@fs.writeFileSync config, stream
-		@fs.mkdirsSync app.file dir
 		for vdir in @views.DIRS then @fs.mkdirsSync app.file vdir
 		cb()
 
@@ -432,8 +433,9 @@ class Utils
 		@install "#{engine.id}@4.0.5", '--save', (error, stdout, stderr) =>
 			@fs.copySync @config("/templates/#{engine.id}/views.js"), app.file('/config/views.js'), { clobber: true }
 			@fs.copySync @config("/templates/#{engine.id}/helpers.js"), app.file('/config/helpers.js'), { clobber: true }
-			@generateViews engine, app, =>
-				cb null, app
+			@resetViewEngine engine, "'layouts/master'", app, =>
+				@generateViews engine, app, =>
+					cb null, app
 
 	###
 	Reset cssPreProcessor
