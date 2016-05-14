@@ -543,7 +543,8 @@ class Utils
 	@param [Function] cb callback function
 	###
 	configureStorageFor: (app, url, cb) ->
-		key = app.storage.toUpperCase()
+		# key = app.storage.toUpperCase()
+		key = app.storage.split('::')[0].toUpperCase()
 		storage = @storage[key]
 		@install "#{storage.adapter}@#{storage.version}", '--save', (error, stdout, stderr) =>
 			@fs.copySync @config("/storage/#{key}/connections"), app.file("/config/connections.js"), { clobber: true }
@@ -560,7 +561,8 @@ class Utils
 	@param [String] config databse connection config data 
 	###
 	setupDBWithConfigFor: (app, cb) ->
-		key = app.storage.toUpperCase()
+		# key = app.storage.toUpperCase()
+		key = app.storage.split('::')[0].toUpperCase()
 		storage = @storage[key]
 		mdest = app.file '/config/models.js'
 		mconfig = @fs.readFileSync mdest, @encoding.UTF8

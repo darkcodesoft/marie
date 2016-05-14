@@ -298,8 +298,11 @@ class Marie
 	@param [Boolean] skip 
 	###
 	configureDB: (app, db, url, skip) ->
-		if db then app.storage = db
-		switch app.storage
+		if db then app.storage = "#{db}::#{url ? url : ''}"
+			# if db !== utils.storage.DISK.name then app.storage = "#{db}::#{url}"
+			# else app.storage = "#{db}::"
+		storage = app.storage.split('::')[0]
+		switch storage
 			when utils.storage.MONGODB.name then @configureMongoDb url, app, skip
 			when utils.storage.MYSQL.name then @configureMySQL url, app, skip
 			when utils.storage.POSTGRESQL.name then @configurePostgreSQL url, app, skip
