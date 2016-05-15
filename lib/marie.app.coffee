@@ -188,6 +188,7 @@ class App
 	###
 	Start app method
 	@param [App] app 
+	@todo revise start
 	@param [Function] cb callback function
 	###
 	@start: (app, cb) ->
@@ -358,9 +359,9 @@ class App
 	@param [String] app
 	@param [Function] cb callback function
 	###
-	@configureTasManager: (app, cb) ->
+	@configureTaskManager: (app, cb) ->
 		app.cwd()
-		utils.configureTasManagerFor app, cb
+		utils.configureTaskManagerFor app, cb
 
 	###
 	Remove package to app

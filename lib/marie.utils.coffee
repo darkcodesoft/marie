@@ -109,6 +109,28 @@ class Utils
 			'/views/layouts/master'
 		]
 
+	# EXIT:
+	# 	ERROR: 0
+	# 	SUCCESS: 1
+	# 	EXISTS: 2
+	# 	FATAL: 3
+
+
+	# response:
+	# 	APP:
+	# 		CREATE:
+	# 			SUCCESS:
+	# 				CODE: 1
+	# 				MESSAGE: "App successfully created."
+	# 			ERROR:
+	# 				CODE: 0
+	# 				MESSAGE: "An error occured."
+	# 			EXIST:
+	# 				CODE: 2
+	# 				MESSAGE: "App already exist."
+
+
+
 	###
 	Construct app
 	###
@@ -141,11 +163,29 @@ class Utils
 	Configure system default error handler
 	@param [String, Object] error 
 	###
-	throwError: (error) ->
-		if error then console.log error else console.log 'an error occured.'
-		setTimeout ->
-			process.exit(1)
-		, 300
+	# throwError: (error) ->
+	# 	console.log "#{0}:#{if error then error else 'an error occured.'}"
+		# setTimeout ->
+		# 	process.exit(1)
+		# , 300
+
+	###
+	Exit process
+	###
+	exit: (code, message) ->
+		# console.log 'somewhere...'
+		# console.log message
+		# console.log code isnt undefined
+		if code isnt undefined and message
+			console.log "#{code}:#{message}"
+		else if code isnt undefined and not message
+			console.log "#{code}"
+		else if code == 0 and not message
+			console.log "#{code}:an error occured."
+		# process.exit(1)
+		# setTimeout ->
+		# 	process.exit(1)
+		# , 300
 
 	###
 	Configure string trim method
@@ -325,7 +365,8 @@ class Utils
 	@param [Object] stderr
 	###
 	stdoutCallBack: (error, stdout, stderr) =>
-		if error then @throwError()
+		# if error then @throwError()
+		if error then @exit 0, error
 
 	###
 	configure sqlite3 as default storage
@@ -339,7 +380,7 @@ class Utils
 	@param [App] app
 	@param [Function] cb callback function
 	###
-	configureTasManagerFor: (app, cb) ->
+	configureTaskManagerFor: (app, cb) ->
 		@install 'grunt-includes@0.5.4', '--save-dev', (error, stdout, stderr) =>
 			includeConfig = if @isCoffee(app) then '/tasks/includes-coffee' else '/tasks/includes'
 			@fs.copySync @config('/tasks/pipeline'), app.file('/tasks/pipeline.js'), { clobber: true }
@@ -543,7 +584,6 @@ class Utils
 	@param [Function] cb callback function
 	###
 	configureStorageFor: (app, url, cb) ->
-		# key = app.storage.toUpperCase()
 		key = app.storage.split('::')[0].toUpperCase()
 		storage = @storage[key]
 		@install "#{storage.adapter}@#{storage.version}", '--save', (error, stdout, stderr) =>
@@ -561,7 +601,6 @@ class Utils
 	@param [String] config databse connection config data 
 	###
 	setupDBWithConfigFor: (app, cb) ->
-		# key = app.storage.toUpperCase()
 		key = app.storage.split('::')[0].toUpperCase()
 		storage = @storage[key]
 		mdest = app.file '/config/models.js'

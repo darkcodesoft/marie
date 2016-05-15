@@ -117,34 +117,38 @@ class Marie
 						@app = new App config
 						@configureSails()
 					else 
-						ui.notice "#{exists.name} already exists."
-						ui.notice "Path: #{exists.path}"
-						ui.notice "Name Suggestion: #{exists.name}-2"
+						@exit 0, "#{exists.name} already exists."
+						# console.log utils.
+						# ui.notice "#{exists.name} already exists."
+						# ui.notice "Path: #{exists.path}"
+						# ui.notice "Name Suggestion: #{exists.name}-2"
 			else 
-				ui.notice "#{config.name} already exists."
-				ui.notice "Path: #{config.path}"
-				ui.notice "Name Suggestion: #{config.name}-2"
+				@exit 0, "#{config.name} already exists."
+				# console.log utils.response.APP.CREATE.EXIST
+				# ui.notice "#{config.name} already exists."
+				# ui.notice "Path: #{config.path}"
+				# ui.notice "Name Suggestion: #{config.name}-2"
 
 	###
 	Confgiure the default express/sails application framework
 	will try to install sails if not already installed. 
 	###
 	configureSails: ->
-		ui.write "Configuring sails."
+		# ui.write "Configuring sails."
 		utils.exe utils.node, [utils.sails, 'generate', 'new', @app.id], (error, stdout, stderr) =>
 			if error
-				ui.write 'Installing initial packages.'
+				# ui.write 'Installing initial packages.'
 				process.chdir @app.path
 				utils.exe utils.node, [utils.npm, 'install'], (error, stdout, stderr) =>
-					if error
-						ui.write error
+					if error then @exit 3, error
+						# ui.write error
 					else
-						ui.ok 'Sails configuration done.'
-						@configureTasManager @app
+						# ui.ok 'Sails configuration done.'
+						@configureTaskManager @app
 			else
-				ui.ok 'Sails configuration done.'
+				# ui.ok 'Sails configuration done.'
 				process.chdir @app.path
-				@configureTasManager @app
+				@configureTaskManager @app
 
 	###
 	Configure grunt as the default task manager
@@ -152,12 +156,12 @@ class Marie
 	Setup for assets coffee files in `/assets/js`
 	@param [App] 
 	###
-	configureTasManager: (app) ->
-		ui.write 'Configuring Grunt...'
-		App.configureTasManager app, (err, app) =>
-			if err then @throwFatalError err 
+	configureTaskManager: (app) ->
+		# ui.write 'Configuring Grunt...'
+		App.configureTaskManager app, (err, app) =>
+			if err then @exit 3, err
 			if app 
-				ui.ok 'Grunt configuration done.'
+				# ui.ok 'Grunt configuration done.'
 				@configureJsCompiler app
 
 	###
@@ -173,11 +177,11 @@ class Marie
 	@param [App] 
 	###
 	configureCoffeeScript: (app) =>
-		ui.write 'Configuring CoffeeScript...'
+		# ui.write 'Configuring CoffeeScript...'
 		App.configureCoffeeScript app, (err, app) =>
-			if err then @throwFatalError err 
+			if err then @exit 3, err 
 			else 
-				ui.ok 'CoffeeScript configuration done.'
+				# ui.ok 'CoffeeScript configuration done.'
 				@configureViewEngine app
 
 	###
@@ -196,11 +200,11 @@ class Marie
 	@param [App] 
 	###
 	configureJade: (app) =>
-		ui.write 'Configuring Jade...'
+		# ui.write 'Configuring Jade...'
 		App.configureJade app, (err, app) =>
-			if err then @throwFatalError err 
+			if err then @exit 3, err
 			else 
-				ui.ok 'Jade configuration done.'
+				# ui.ok 'Jade configuration done.'
 				@configureCssPreProcessor app
 
 	###
@@ -209,11 +213,11 @@ class Marie
 	@param [App] 
 	###
 	configureEJS: (app) =>
-		ui.write 'Configuring EJs...'
+		# ui.write 'Configuring EJs...'
 		App.configureEJS app, (err, app) =>
-			if err then @throwFatalError err 
+			if err then @exit 3, err
 			else 
-				ui.ok 'EJs configuration done.'
+				# ui.ok 'EJs configuration done.'
 				@configureCssPreProcessor app
 
 	###
@@ -222,11 +226,11 @@ class Marie
 	@param [App] 
 	###
 	configureHandlerbars: (app) =>
-		ui.write 'Configuring Handlebars...'
+		# ui.write 'Configuring Handlebars...'
 		App.configureHandlebars app, (err, app) =>
-			if err then @throwFatalError err 
+			if err then @exit 3, err 
 			else 
-				ui.ok 'Handlebars configuration done.'
+				# ui.ok 'Handlebars configuration done.'
 				@configureCssPreProcessor app
 
 	###
@@ -244,11 +248,11 @@ class Marie
 	@param [App] 
 	###
 	configureLess:(app) =>
-		ui.write 'Configuring Less...'
+		# ui.write 'Configuring Less...'
 		App.configureLess app, (err, app) =>
-			if err then @throwFatalError err 
+			if err then @exit 3, err 
 			else
-				ui.ok 'Less configuration done.'
+				# ui.ok 'Less configuration done.'
 				@configureBundles app
 
 	###
@@ -256,11 +260,11 @@ class Marie
 	@param [App] 
 	###
 	configureScss:(app) =>
-		ui.write 'Configuring Sass...'
+		# ui.write 'Configuring Sass...'
 		App.configureScss app, (err, app) =>
-			if err then @throwFatalError err 
+			if err then @exit 3, err
 			else
-				ui.ok 'Sass configuration done.'
+				# ui.ok 'Sass configuration done.'
 				@configureBundles app
 
 	###
@@ -268,11 +272,11 @@ class Marie
 	@param [App] 
 	###
 	configureStylus:(app) =>
-		ui.write 'Configuring Stylus...'
+		# ui.write 'Configuring Stylus...'
 		App.configureStylus app, (err, app) =>
-			if err then @throwFatalError err 
+			if err then @exit 3, err 
 			else
-				ui.ok 'Stylus configuration done.'
+				# ui.ok 'Stylus configuration done.'
 				@configureBundles app
 
 	###
@@ -281,11 +285,11 @@ class Marie
 	@param [Boolean] skip 
 	###
 	configureBundles: (app, skip) ->
-		ui.ok "configure bundles"
+		# ui.ok "configure bundles"
 		App.configureBundles app, (err, app) =>
-			if err then @throwFatalError err 
+			if err then @exit 3, err
 			else
-				ui.ok 'Frontend configuration done.'
+				# ui.ok 'Frontend configuration done.'
 				if not not skip
 					app.save (err, app) =>
 						@restart()
@@ -299,8 +303,6 @@ class Marie
 	###
 	configureDB: (app, db, url, skip) ->
 		if db then app.storage = "#{db}::#{url ? url : ''}"
-			# if db !== utils.storage.DISK.name then app.storage = "#{db}::#{url}"
-			# else app.storage = "#{db}::"
 		storage = app.storage.split('::')[0]
 		switch storage
 			when utils.storage.MONGODB.name then @configureMongoDb url, app, skip
@@ -315,7 +317,7 @@ class Marie
 	@param [Boolean] skip 
 	###
 	configureLocalDisk: (url, app, skip) =>
-		ui.write "Configuring Local Disk..."
+		# ui.write "Configuring Local Disk..."
 		@configureStorage null, app, skip
 
 	###
@@ -325,7 +327,7 @@ class Marie
 	@param [Boolean] skip 
 	###
 	configureMongoDb: (url, app, skip) =>
-		ui.write "Configuring MongoDb..."
+		# ui.write "Configuring MongoDb..."
 		@configureStorage url, app, skip
 
 	###
@@ -335,7 +337,7 @@ class Marie
 	@param [Boolean] skip 
 	###
 	configureMySQL: (url, app, skip) =>
-		ui.write "Configuring MySQL..."
+		# ui.write "Configuring MySQL..."
 		@configureStorage url, app, skip
 	
 	###
@@ -345,7 +347,7 @@ class Marie
 	@param [Boolean] skip 
 	###
 	configurePostgreSQL: (url, app, skip) =>
-		ui.write "Configuring PostgreSQL..."
+		# ui.write "Configuring PostgreSQL..."
 		@configureStorage url, app, skip
 
 	###
@@ -355,7 +357,7 @@ class Marie
 	@param [Boolean] skip 
 	###
 	configureRedis: (url, app, skip) =>
-		ui.write "Configuring Redis..."
+		# ui.write "Configuring Redis..."
 		@configureStorage url, app, skip
 
 	###
@@ -366,24 +368,49 @@ class Marie
 	###
 	configureStorage:(url, app, skip) =>
 		App.configureStorage app, url, (err, app) =>
-			if err then utils.throwError err 
+			if err then @exit 0, err 
 			else
-				ui.ok "#{app.storage} database configuration done."
+				# ui.ok "#{app.storage} database configuration done."
 				@save app, skip
+
+
+	###
+	Exit process with exit code
+	@param [Int] exit code
+	###
+	exit: (code, message) ->
+		if code == 3
+			utils.fs.stat @app.path, (err, stats) =>
+				if not err
+					utils.fs.removeSync @app.path
+					App.remove @app.id
+					utils.exit code, message
+				else
+					utils.exit code, message
+		else
+			utils.exit code, message
+
+	###
+	Output method
+	@param [String] data
+	###
+	stdout: (data) ->
+		console.log '%s', data
+
 
 	###
 	If something goes really bad. Stop everything
 	Remove everything and exit process
 	@param [Object, String] error 
 	###
-	throwFatalError: (error) ->
-		utils.fs.stat @app.path, (err, stats) =>
-			if not err
-				utils.fs.removeSync @app.path
-				App.remove @app.id
-				utils.throwError error
-			else
-				utils.throwError error
+	# throwFatalError: (error) ->
+	# 	utils.fs.stat @app.path, (err, stats) =>
+	# 		if not err
+	# 			utils.fs.removeSync @app.path
+	# 			App.remove @app.id
+	# 			utils.throwError error
+	# 		else
+	# 			utils.throwError error
 
 	###
 	Save app to marie database
@@ -392,23 +419,29 @@ class Marie
 	save: (app, skip) ->
 		if not not skip
 			app.save (err, app) =>
-				if err then utils.throwError err 
+				if err then @exit 3, err 
 				else @restart()
-			return false
+			# return false
 		else
 			app.add (err, app) =>
-				if err then @throwFatalError err
-				else @onSave app
+				if err then @exit 3, err
+				else 
+					# console.log "added"
+					@onSave app
 
 	###
 	App creation callback method
 	Will ask to start newly created app
 	###
 	onSave: (app) ->
-		ui.notice "#{app.name} was successfully created."
-		ui.notice "app-id: #{app.id}"
-		ui.notice "Run `marie start #{app.id}` to start app."
-		ui.notice "Run `marie list #{app.id}` to view app."
+		@exit 1, "#{app.id}:#{app.name}"
+
+		# @stdout "1:#{app.id}:#{app.name}"
+
+		# ui.notice "#{app.name} was successfully created."
+		# ui.notice "app-id: #{app.id}"
+		# ui.notice "Run `marie start #{app.id}` to start app."
+		# ui.notice "Run `marie list #{app.id}` to view app."
 		# ui.notice "Id: #{app.id}"
 		# ui.notice "Path: #{app.path}"
 		# ui.notice "Done."
@@ -422,28 +455,41 @@ class Marie
 	###	
 	add: (name, cssPreProcessor, viewEngine, jsCompiler, root) ->
 		valid = true
-		if not name
-			ui.error 'Missing field: app name.'
+		if not name then @exit 0, 'Missing app name.'
+			# process.exit(1)
+			# ui.error 'Missing field: app name.'
+			# valid = false
+		if not cssPreProcessor then cssPreProcessor = utils.processors.LESS.id
+		else if cssPreProcessor and not utils.getProcessor cssPreProcessor.toLowerCase()
+			# ui.error 'Invalid css pre-processor argument.'
+			# ui.notice "Supported pre-processors: #{utils.processorList().join(', ')}"
+			# @exit 0, 'Invalid css pre-processor argument.'
+			cssPreProcessor = cssPreProcessor.toLowerCase()
 			valid = false
-		if cssPreProcessor and not utils.getProcessor cssPreProcessor.toLowerCase()
-			ui.error 'Invalid css pre-processor argument.'
-			ui.notice "Supported pre-processors: #{utils.processorList().join(', ')}"
+
+		if not viewEngine then viewEngine = utils.engines.JADE.id
+		else if viewEngine and not utils.getEngine viewEngine.toLowerCase()
+			# ui.error 'Invalid view engine argument.'
+			# ui.notice "Supported engines: #{utils.engineList().join(', ')}"
+			# @exit 0, 'Invalid view engine argument.'
+			viewEngine = viewEngine.toLowerCase()
 			valid = false
-		if viewEngine and not utils.getEngine viewEngine.toLowerCase()
-			ui.error 'Invalid view engine argument.'
-			ui.notice "Supported engines: #{utils.engineList().join(', ')}"
-			valid = false
-		if jsCompiler and not utils.getCompiler jsCompiler.toLowerCase()
-			ui.error 'Invalid JS compiler argument.'
-			ui.notice "Supported compilers: #{utils.compilerList().join(', ')}"
+
+		if not jsCompiler then jsCompiler = utils.compilers.NATIVE.name
+		else if jsCompiler and not utils.getCompiler jsCompiler.toLowerCase()
+			# ui.error 'Invalid JS compiler argument.'
+			# ui.notice "Supported compilers: #{utils.compilerList().join(', ')}"
+			# @exit 0, 'Invalid JS compiler argument.'
+			jsCompiler = jsCompiler.toLowerCase()
 			valid = false
 		if root 
 			@root = root
 			process.chdir @root
-		preocessor = utils.getProcessor(cssPreProcessor.toLowerCase()).id or utils.processors.LESS.id
-		engine = utils.getEngine(viewEngine.toLowerCase()).id or utils.engines.JADE.id
-		compiler = utils.getCompiler(jsCompiler.toLowerCase()).name or utils.compilers.NATIVE.name
+		preocessor = utils.getProcessor(cssPreProcessor.toLowerCase()).id
+		engine = utils.getEngine(viewEngine.toLowerCase()).id
+		compiler = utils.getCompiler(jsCompiler.toLowerCase()).name
 		if valid then @new name, preocessor, engine, compiler
+		else @exit 0, "Invalid argument"
 
 	###
 	Configure `list` app command handler. 
@@ -455,7 +501,7 @@ class Marie
 	list: (arg, key, opt) =>
 		if arg == '--config' then return @listUtilityConfig()
 		App.find arg, (err, data) =>
-			if err then utils.throwError err
+			if err then @exit 0, err
 			else
 				if not not key
 					if key is 'api' then @listApis arg
@@ -464,7 +510,9 @@ class Marie
 					else
 						app = new App data
 						for k of app
-							if k.toLowerCase() == key.toLowerCase() then ui.notice JSON.stringify app[k]
+							if k.toLowerCase() == key.toLowerCase() 
+								ui.notice JSON.stringify app[k]
+								# @exit 1, JSON.stringify app[k]
 				else 
 					if not not arg 
 						App.getModules arg, opt, (err, config) =>
@@ -484,9 +532,15 @@ class Marie
 										attributes: data
 										modules: modules
 										apis: apis
-									console.log JSON.stringify app
+									@stdout JSON.stringify app
+									# @exit()
+									# response = JSON.stringify app
+									# @exit 1, response
 					else
-						console.log JSON.stringify data
+						@stdout JSON.stringify data
+						# @exit()
+						# response = JSON.stringify data
+						# @exit 1, response
 
 	###
 	Configure `live` app command handler. Get all live app
@@ -494,21 +548,23 @@ class Marie
 	###
 	live: =>
 		App.live (err, app) =>
-			if err then utils.throwError err
-			else if app then console.log JSON.stringify app
-			else ui.notice 'No app is live.'
+			if err then @exit 0, err
+			else if app then @stdout JSON.stringify app
+			else @exit 1, 'No app is live.'
 
 	###
 	Configure `doc` method
 	###
 	doc: =>
-		ui.notice @config.homepage
+		# ui.notice @config.homepage
+		@stdout @config.homepage
 
 	###
 	Configure `version` method
 	###
 	version: =>
-		ui.notice @config.version
+		# ui.notice @config.version
+		@stdout @config.version
 
 	###
 	Configure `remove` app command handler. Remove app from system
@@ -519,12 +575,12 @@ class Marie
 		if not not arg
 			if arg == '--reset'
 				App.reset (err, success) =>
-					if err then utils.throwError err
-					else ui.ok success
+					if err then @exit 0, err
+					else @exit 1, success
 			else
 				App.remove arg, (err, success) =>
-					if err then utils.throwError err
-					else ui.ok success
+					if err then @exit 0, err
+					else @exit 1, success
 		else @missingArgHandler()
 
 	###
@@ -533,7 +589,7 @@ class Marie
 	###
 	start: (id) =>
 		App.live (err, data) =>
-			if err then utils.throwError err
+			if err then @exit 0, err
 			else if data
 				@stop null, =>
 					@_run 'start', id
@@ -546,7 +602,7 @@ class Marie
 	###
 	stop: (id, cb) =>
 		App.live (err, data) =>
-			if err then utils.throwError err
+			if err then @exit 0, err
 			else if data 
 				app = new App data
 				@_stop app, cb
@@ -558,27 +614,31 @@ class Marie
 	###
 	restart: (arg) =>
 		App.live (err, data) =>
-			if err then utils.throwError err
+			if err then @exit 0, err
 			else if data
 				app = new App data
 				@_stop app, =>
 					@_start app
 			else
-				if not arg then ui.notice 'No app is live.'
+				if not arg then @exit 1, 'No app is live.'
 
 	###
 	Configure system start app method
+	@todo revised start
 	@param [App] app app to start
 	###
 	_start: (app) ->
 		App.start app, (err, app) =>
-			if err then utils.throwError err
+			if err then @exit 0, err
 			else
-				ui.write "Starting #{app.name}..."
+				# @exit 1, "#{app.name} started."
+				# process.exit()
+				# ui.write "Starting #{app.name}..."
 				setTimeout =>
-					ui.ok "#{app.name} started."
-					ui.notice "Url: http://localhost:1337"
-					ui.notice "Path: #{app.path}"
+					@exit 1, "#{app.name} started."
+				# 	# ui.ok "#{app.name} started."
+				# 	# ui.notice "Url: http://localhost:1337"
+				# 	# ui.notice "Path: #{app.path}"
 					process.exit()
 				, 1000
 
@@ -588,12 +648,13 @@ class Marie
 	@example `_stop app`
 	###
 	_stop: (app, cb) ->
-		ui.write "Stopping #{app.name}..."
+		# ui.write "Stopping #{app.name}..."
 		App.stop app, (err, app) =>
-			if err then utils.throwError err 
+			if err then @exit 0, err
 			else 
-				ui.ok "#{app.name} stopped."
+				# ui.ok "#{app.name} stopped."
 				if cb then cb()
+				else @exit 1, "#{app.name} stopped."
 
 	###
 	Configure system run app method.
@@ -603,7 +664,7 @@ class Marie
 	_run: (cmd, arg, cb) ->
 		if not not arg
 			App.find arg, (err, data) =>
-				if err then utils.throwError err
+				if err then @exit 0, err
 				if data
 					app = new App data
 					if cmd.match /^stop/i
@@ -617,7 +678,8 @@ class Marie
 							@_start app
 		else
 			if cmd.match /^stop/i
-				ui.notice 'No app is live.'
+				# ui.notice 'No app is live.'
+				@exit 1, 'No app is live.'
 			else
 				@missingArgHandler()
 
@@ -629,11 +691,12 @@ class Marie
 	addApi: (arg, api) =>
 		if not not api 
 			App.addApi arg, api, (err, app) =>
-				if err then utils.throwError err
+				if err then @exit 0, "api #{api} exists."
 				else
 					@app = app
 					@restart()
-					ui.ok "Added api #{api}"
+					# @exit 1, "Added api #{api}"
+					# ui.ok "Added api #{api}"
 		else @missingArgHandler()
 
 	###
@@ -644,11 +707,12 @@ class Marie
 	removeApi: (arg, api) =>
 		if not not api 
 			App.removeApi arg, api, (err, app) =>
-				if err then utils.throwError err
+				if err then @exit 0, err
 				else
 					@app = app
 					@restart()
-					ui.ok "Removed api #{api}"
+					# @exit 1, "Removed api #{api}"
+					# ui.ok "Removed api #{api}"
 		else @missingArgHandler()
 
 	###
@@ -659,13 +723,14 @@ class Marie
 	###
 	addModule: (arg, pkg, opt) =>
 		if not not pkg
-			ui.write "Adding `#{pkg}` module..."
+			# ui.write "Adding `#{pkg}` module..."
 			App.addModule arg, pkg, opt, (err, app) =>
-				if err then utils.throwError err
+				if err then @exit 0, err
 				else
 					@app = app
 					@restart()
-					ui.ok "Added module #{pkg}"
+					# ui.ok "Added module #{pkg}"
+					# @exit 1, "Added module #{pkg}"
 		else @missingArgHandler()
 
 	###
@@ -676,13 +741,13 @@ class Marie
 	###
 	removeModule: (arg, pkg, opt) =>
 		if not not pkg
-			ui.write "Removing `#{pkg}` module..."
+			# ui.write "Removing `#{pkg}` module..."
 			App.removeModule arg, pkg, opt, (err, app) =>
-				if err then utils.throwError err
+				if err then @exit 0, err
 				else
 					@app = app
 					@restart()
-					ui.ok "Removed module #{pkg}"
+					# ui.ok "Removed module #{pkg}"
 		else @missingArgHandler()
 
 	###
@@ -692,10 +757,10 @@ class Marie
 	###
 	listConfig: (arg, key) =>
 		App.getConfig arg, key, (err, config) =>
-			if err then utils.throwError err
+			if err then @exit 0, err
 			else
-				if config.constructor == String then ui.notice JSON.stringify config
-				else console.log JSON.stringify config
+				if config.constructor == String then @stdout JSON.stringify config
+				else @stdout JSON.stringify config
 
 	###
 	List utility config
@@ -706,7 +771,7 @@ class Marie
 			processors: utils.processors
 			engines: utils.engines
 			storage: utils.storage
-		console.log JSON.stringify config
+		@stdout JSON.stringify config
 
 	###
 	Configure list module method
@@ -715,10 +780,10 @@ class Marie
 	###
 	listModules: (arg, opt) =>
 		App.getModules arg, opt, (err, config) =>
-			if err then utils.throwError err
+			if err then @exit 0, err
 			else
-				if config.constructor == String then ui.notice JSON.stringify config
-				else console.log JSON.stringify config
+				if config.constructor == String then @stdout JSON.stringify config
+				else @stdout JSON.stringify config
 
 	###
 	Configure list module method
@@ -726,8 +791,8 @@ class Marie
 	###
 	listApis: (arg) =>
 		App.getApis arg, (err, config) =>
-			if err then utils.throwError err
-			else console.log JSON.stringify config
+			if err then @exit 0, err
+			else @stdout JSON.stringify config
 
 	###
 	Display system log method 
@@ -736,16 +801,18 @@ class Marie
 		file = "#{utils.root}/config/.log"
 		if arg and arg.match /clear/i
 			utils.fs.stat file, (err, stats) ->
-				if err then ui.notice 'Log is empty'
+				if err then @exit 1, 'Log is empty'
 				else
 					utils.fs.unlinkSync file
-					ui.notice 'Log is empty'
+					# ui.notice 'Log is empty'
+					@exit 1, 'Log is empty'
 		else
 			utils.fs.stat file, (err, stats) ->
-				if err then ui.notice 'Log is empty'
+				if err then @exit 1, 'Log is empty'
 				else
 					log = utils.fs.readFileSync file, utils.encoding.UTF8
-					console.log '%s', log
+					@stdout log
+					utils.exit()
 
 	###
 	cli configure command handler
@@ -756,7 +823,7 @@ class Marie
 	configureMore: (arg, key, opt, value) =>
 		if not not key
 			App.find arg, (error, data) =>
-				if error then utils.throwError error
+				if error then @exit 0, error
 				else if data
 					@app = new App data
 					if key.match /db/i
@@ -770,8 +837,10 @@ class Marie
 									else
 										@missingArgHandler()
 							else
-								ui.error 'Invalid storage argument.'
-								ui.notice "Supported databases: #{utils.storageList().join(', ')}"
+								@missingArgHandler()
+								# @exit 0, 'Invalid storage argument.'
+								# ui.error 'Invalid storage argument.'
+								# ui.notice "Supported databases: #{utils.storageList().join(', ')}"
 						else
 							@missingArgHandler()
 					else
@@ -783,17 +852,23 @@ class Marie
 	configure missing/invalid arg handler
 	###
 	missingArgHandler: ->
-		ui.notice 'invalid or missing argument.'
+		# ui.notice 'invalid or missing argument.'
+		@exit 0, 'invalid or missing argument.'
 
 	###
 	display help
 	###
 	listHelp: =>
 		help = utils.fs.readFileSync utils.path.join(utils.root, 'help.txt'), utils.UTF8
-		ui.notice 'Valid commands:'
-		console.log '%s', help
-		console.log '  %s', @config.homepage
-		console.log ''
+		# ui.notice 'Valid commands:'
+		# console.log '%s', help
+		# console.log '  %s', @config.homepage
+		# console.log ''
+		# utils.exit()
+		@stdout 'Valid commands:'
+		@stdout help
+		@stdout @config.homepage
+		@stdout ''
 
 # export marie module
 module.exports = Marie
