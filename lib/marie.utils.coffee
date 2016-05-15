@@ -109,28 +109,6 @@ class Utils
 			'/views/layouts/master'
 		]
 
-	# EXIT:
-	# 	ERROR: 0
-	# 	SUCCESS: 1
-	# 	EXISTS: 2
-	# 	FATAL: 3
-
-
-	# response:
-	# 	APP:
-	# 		CREATE:
-	# 			SUCCESS:
-	# 				CODE: 1
-	# 				MESSAGE: "App successfully created."
-	# 			ERROR:
-	# 				CODE: 0
-	# 				MESSAGE: "An error occured."
-	# 			EXIST:
-	# 				CODE: 2
-	# 				MESSAGE: "App already exist."
-
-
-
 	###
 	Construct app
 	###
@@ -160,32 +138,15 @@ class Utils
 		@fs = require 'fs-extra'
 
 	###
-	Configure system default error handler
-	@param [String, Object] error 
-	###
-	# throwError: (error) ->
-	# 	console.log "#{0}:#{if error then error else 'an error occured.'}"
-		# setTimeout ->
-		# 	process.exit(1)
-		# , 300
-
-	###
 	Exit process
 	###
 	exit: (code, message) ->
-		# console.log 'somewhere...'
-		# console.log message
-		# console.log code isnt undefined
 		if code isnt undefined and message
 			console.log "#{code}:#{message}"
 		else if code isnt undefined and not message
 			console.log "#{code}"
 		else if code == 0 and not message
 			console.log "#{code}:an error occured."
-		# process.exit(1)
-		# setTimeout ->
-		# 	process.exit(1)
-		# , 300
 
 	###
 	Configure string trim method
