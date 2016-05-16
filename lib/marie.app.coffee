@@ -188,7 +188,6 @@ class App
 	###
 	Start app method
 	@param [App] app 
-	@todo revise start
 	@param [Function] cb callback function
 	###
 	@start: (app, cb) ->

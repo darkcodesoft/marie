@@ -142,11 +142,11 @@ class Utils
 	###
 	exit: (code, message) ->
 		if code isnt undefined and message
-			console.log "#{code}:#{message}"
+			console.log @trim "#{code}:#{message}"
 		else if code isnt undefined and not message
-			console.log "#{code}"
+			console.log @trim "#{code}"
 		else if code == 0 and not message
-			console.log "#{code}:an error occured."
+			console.log @trim "#{code}:an error occured."
 
 	###
 	Configure string trim method
