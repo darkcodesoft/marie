@@ -634,7 +634,7 @@ class Marie
 	addApi: (arg, api) =>
 		if not not api 
 			App.addApi arg, api, (err, app) =>
-				if err then @exit 0, "api #{api} exists."
+				if err then @exit 0, "#{api} api already exists."
 				else
 					@app = app
 					@restart()
@@ -804,6 +804,6 @@ class Marie
 		@stdout @config.homepage
 		@stdout ''
 		process.exit()
-		
+
 # export marie module
 module.exports = Marie

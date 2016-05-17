@@ -246,8 +246,11 @@ class Utils
 	###
 	install: (pkg, opt, cb) ->
 		if opt.match /\-front/
-			@bower.commands.install(pkg, {save:true, directory: 'assets/modules'}).on 'end', (installed) ->
+			bower = @bower.commands.install(pkg, {save:true, directory: 'assets/modules'})
+			bower.on 'end', (installed) ->
 				cb null, installed, null
+			bower.on 'error', (err) ->
+				cb err, null, null
 		else
 			@exe @node, [@npm, 'install', pkg, opt], cb
 
@@ -259,8 +262,11 @@ class Utils
 	###
 	uninstall: (pkg, opt, cb) ->
 		if opt.match /\-front/
-			@bower.commands.uninstall(pkg, {save:true, directory: 'assets/modules'}).on 'end', (installed) ->
+			bower = @bower.commands.uninstall(pkg, {save:true, directory: 'assets/modules'})
+			bower.on 'end', (installed) ->
 				cb null, installed, null
+			bower.on 'error', (err) ->
+				cb err, null, null
 		else
 			@exe @node, [@npm, 'uninstall', pkg, opt], cb
 
